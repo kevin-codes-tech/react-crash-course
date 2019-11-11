@@ -1,55 +1,71 @@
-import React, { Component } from "react";
-import Todos from "./Components/Todos";
-import Header from "./Components/layout/header";
-import AddTodo from "./Components/addTodo";
-import "./App.css";
+import React, { Component } from 'react';
+import Todos from './Components/Todos';
+import Header from './Components/layout/header';
+import AddTodo from './Components/addTodo';
+import './App.css';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import About from './Components/Pages/about';
 
 class App extends Component {
   state = {
-    todos: [
-      {
-        id: 1,
-        title: "Finish Crash Course",
-        completed: false
-      },
-      {
-        id: 2,
-        title: "Master React",
-        completed: true
-      },
-      {
-        id: 3,
-        title: "Finish Vue Crash Course",
-        completed: false
-      }
-    ]
+    todos: []
   };
+
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/todos?_limit=10')
+      .then(responseData => {
+        return responseData.json();
+      })
+      .then(response => {
+        this.setState({ todos: response });
+      });
+  }
 
   render() {
     return (
-      <div className="App">
-        <div className="container">
-          <Header></Header>
-          <AddTodo addTodo={this.addTodo}></AddTodo>
-          <Todos
-            todos={this.state.todos}
-            markComplete={this.markComplete}
-            deleteTodo={this.deleteTodo}
-          />
+      <Router>
+        <div className="App">
+          <div className="container">
+            <Header></Header>
+            <Route
+              exact
+              path="/"
+              render={props => (
+                <React.Fragment>
+                  <AddTodo addTodo={this.addTodo}></AddTodo>
+                  <Todos
+                    todos={this.state.todos}
+                    markComplete={this.markComplete}
+                    deleteTodo={this.deleteTodo}
+                  />
+                </React.Fragment>
+              )}
+            />
+            <Route path="/about" component={About} />
+          </div>
         </div>
-      </div>
+      </Router>
     );
   }
 
   addTodo = title => {
-    const newTodo = {
-      id: this.state.todos.length + 1,
-      title,
-      completed: false
-    };
-    this.setState({
-      todos: [...this.state.todos, newTodo]
-    });
+    fetch('https://jsonplaceholder.typicode.com/todos', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title,
+        completed: false
+      })
+    })
+      .then(responseData => {
+        return responseData.json();
+      })
+      .then(response => {
+        this.setState({ todos: [...this.state.todos, response] });
+      });
   };
 
   markComplete = id => {
@@ -64,9 +80,17 @@ class App extends Component {
   };
 
   deleteTodo = id => {
-    this.setState({
-      todos: this.state.todos.filter(todo => todo.id !== id)
-    });
+    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+      method: 'DELETE'
+    })
+      .then(responseData => {
+        return responseData.json();
+      })
+      .then(response => {
+        this.setState({
+          todos: this.state.todos.filter(todo => todo.id !== id)
+        });
+      });
   };
 }
 

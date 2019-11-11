@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 const btnStyle = {
-  background: "#ff0000",
-  color: "#fff",
-  border: "none",
-  padding: "5px 10px",
-  cursor: "pointer",
-  float: "right"
+  background: '#ff0000',
+  color: '#fff',
+  border: 'none',
+  padding: '5px 10px',
+  cursor: 'pointer',
+  float: 'right'
 };
 
 export class TodoItem extends Component {
@@ -18,10 +18,11 @@ export class TodoItem extends Component {
         <span>
           <input
             type="checkbox"
+            checked={this.props.todoItem.completed}
             onChange={this.props.markComplete.bind(this, id)}
           />
-        </span>{" "}
-        {title}{" "}
+        </span>{' '}
+        {title}{' '}
         <span>
           <button
             onClick={this.props.deleteTodo.bind(this, id)}
@@ -36,7 +37,7 @@ export class TodoItem extends Component {
 
   getStyle = () => {
     return {
-      textDecoration: this.props.todoItem.completed ? "line-through" : "none"
+      textDecoration: this.props.todoItem.completed ? 'line-through' : 'none'
     };
   };
 }
